@@ -1,0 +1,10 @@
+{
+  "name": "enbotsant",
+  "version": "0.0.1",
+  "description": "lichess discord bot",
+  "main": "index.js",
+  "repository": "git@gitlab.com:sbrandwoo/enbotsant.git",
+  "author": "157932-sbrandwoo@users.noreply.gitlab.com",
+  "license": "MIT",
+  "private": false
+}
