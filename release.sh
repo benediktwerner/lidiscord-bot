@@ -14,7 +14,7 @@ then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
-git tag -am "Release $VERSION" v$VERSION
+npm version $VERSION
 git push --tags
 
 docker pull node:14
