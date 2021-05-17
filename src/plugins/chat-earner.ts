@@ -1,11 +1,14 @@
 import { differenceInSeconds } from 'date-fns';
 
+import { CHANNEL_DISCORD_GAMES_TRIVIA } from '../channels';
 import { loadUserBank, saveUserBank } from '../db/user-bank';
 import { Plugin } from './plugin';
 
 const SECONDS_IN_HOUR = 60 * 60;
 
 const plugin: Plugin = {
+  channelExcludes: [CHANNEL_DISCORD_GAMES_TRIVIA],
+
   async onMessage(msg) {
     const userBank = await loadUserBank(msg.author?.id);
     const secondsSinceLastChat = userBank.lastEarning

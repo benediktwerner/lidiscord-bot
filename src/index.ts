@@ -35,6 +35,19 @@ client.on('message', (msg) => {
   // console.log('MESSAGE', msg);
 
   plugins.forEach((plugin) => {
+    if (
+      plugin.channelIncludes &&
+      !plugin.channelIncludes.includes(msg.channel.id)
+    ) {
+      return;
+    }
+    if (
+      plugin.channelExcludes &&
+      plugin.channelExcludes?.includes(msg.channel.id)
+    ) {
+      return;
+    }
+
     plugin.onMessage?.(msg);
   });
 });
