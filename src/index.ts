@@ -27,8 +27,8 @@ client.on('ready', () => {
 });
 
 client.on('message', (msg) => {
-  if (msg.author.id === '843072936436170822') {
-    // Ignore own messages
+  if (msg.author.bot) {
+    // Skip bot messages
     return;
   }
 
