@@ -15,7 +15,7 @@ then
 fi
 
 npm version $VERSION
-git push --tags
+git push origin v$VERSION
 
 docker pull node:14
 docker build -t registry.gitlab.com/sbrandwoo/enbotsant:$VERSION .
