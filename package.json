@@ -1,6 +1,6 @@
 {
   "name": "enbotsant",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "lichess discord bot",
   "main": "index.js",
   "repository": "git@gitlab.com:sbrandwoo/enbotsant.git",
