@@ -1,4 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
+import { TextChannel } from 'discord.js';
 
 import { CHANNEL_DISCORD_GAMES_TRIVIA } from '../channels';
 import { Plugin } from './plugin';
@@ -18,15 +19,18 @@ const plugin: Plugin = {
     const luck = Math.random();
 
     if (chance > luck) {
+      const newTotal = user.total + 10;
       updateUser({
         ...user,
         lastEarning: new Date(message.createdTimestamp),
         earnings: user.earnings + 10,
-        total: user.total + 10,
+        total: newTotal,
       });
       console.log(
         new Date().toISOString(),
-        `${message.author.username} earnt 10`
+        `${message.author.username} earnt 10 in ${
+          (message.channel as TextChannel).name || 'unknown'
+        }, they now have ${newTotal}`
       );
     }
   },
