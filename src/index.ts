@@ -2,7 +2,7 @@ import { Client } from 'discord.js';
 import { exit } from 'process';
 
 import { loadUser, saveUser, User } from './db/user';
-import inviteDeleterPlugin from './plugins/invite-deleter';
+import nameUpdaterPlugin from './plugins/name-updater';
 import chatEarnerPlugin from './plugins/chat-earner';
 import bankInfoPlugin from './plugins/bank-info';
 
@@ -17,11 +17,7 @@ if (!DISCORD_BOT_TOKEN) {
 
 const client = new Client();
 
-const plugins = [
-  // inviteDeleterPlugin,
-  chatEarnerPlugin,
-  //  bankInfoPlugin
-];
+const plugins = [nameUpdaterPlugin, chatEarnerPlugin, bankInfoPlugin];
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
