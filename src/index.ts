@@ -2,9 +2,7 @@ import { Client } from 'discord.js';
 import { exit } from 'process';
 
 import { loadUser, saveUser, User } from './db/user';
-import nameUpdaterPlugin from './plugins/name-updater';
-import chatEarnerPlugin from './plugins/chat-earner';
-import bankInfoPlugin from './plugins/bank-info';
+import pluginsProduction from './plugins.production';
 
 require('dotenv').config();
 
@@ -17,7 +15,11 @@ if (!DISCORD_BOT_TOKEN) {
 
 const client = new Client();
 
-const plugins = [nameUpdaterPlugin, chatEarnerPlugin, bankInfoPlugin];
+let plugins = pluginsProduction;
+try {
+  plugins = require('./plugins.local').default;
+} catch (e) {}
+console.log(`Loaded ${plugins.length} plugins`);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
