@@ -1,6 +1,7 @@
 import { Client } from 'discord.js';
 import { exit } from 'process';
 
+import { loadUser, saveUser, User } from './db/user';
 import inviteDeleterPlugin from './plugins/invite-deleter';
 import chatEarnerPlugin from './plugins/chat-earner';
 import bankInfoPlugin from './plugins/bank-info';
@@ -26,30 +27,45 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
 
-client.on('message', (msg) => {
-  if (msg.author.bot) {
+client.on('message', async (message) => {
+  if (message.author.bot) {
     // Skip bot messages
     return;
   }
 
   // console.log('MESSAGE', msg);
 
-  plugins.forEach((plugin) => {
+  let userNeedsSaving = false;
+  let user = await loadUser(message.author?.id);
+  const updateUser = (newUser: User) => {
+    userNeedsSaving = true;
+    user = newUser;
+  };
+
+  for (let plugin of plugins) {
     if (
       plugin.channelIncludes &&
-      !plugin.channelIncludes.includes(msg.channel.id)
+      !plugin.channelIncludes.includes(message.channel.id)
     ) {
       return;
     }
     if (
       plugin.channelExcludes &&
-      plugin.channelExcludes?.includes(msg.channel.id)
+      plugin.channelExcludes?.includes(message.channel.id)
     ) {
       return;
     }
 
-    plugin.onMessage?.(msg);
-  });
+    try {
+      await plugin.onMessage?.({ message, user, updateUser });
+    } catch (e) {
+      console.error(`Plugin ${plugin.name} failed`, e);
+    }
+  }
+
+  if (userNeedsSaving) {
+    await saveUser(user);
+  }
 });
 
 client.login(DISCORD_BOT_TOKEN);

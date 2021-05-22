@@ -3,18 +3,19 @@ import { Message } from 'discord.js';
 import { Plugin } from './plugin';
 
 const plugin: Plugin = {
-  async onMessage(msg: Message) {
-    if (isInvite(msg)) {
-      await msg.reply('Sorry, no invites here, try #promotion');
-      await msg.delete();
+  name: 'invite-deleter',
+  async onMessage({ message }) {
+    if (isInvite(message)) {
+      await message.reply('Sorry, no invites here, try #promotion');
+      await message.delete();
     }
   },
 };
 
-function isInvite(msg: Message) {
+function isInvite(message: Message) {
   return (
-    msg.content.includes('discordapp.com/invite') ||
-    msg.content.includes('discord.gg/')
+    message.content.includes('discordapp.com/invite') ||
+    message.content.includes('discord.gg/')
   );
 }
 

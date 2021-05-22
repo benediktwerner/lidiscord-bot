@@ -1,31 +1,33 @@
 import { differenceInSeconds } from 'date-fns';
 
 import { CHANNEL_DISCORD_GAMES_TRIVIA } from '../channels';
-import { loadUserBank, saveUserBank } from '../db/user-bank';
 import { Plugin } from './plugin';
 
 const SECONDS_IN_HOUR = 60 * 60;
 
 const plugin: Plugin = {
+  name: 'chat-earner',
   channelExcludes: [CHANNEL_DISCORD_GAMES_TRIVIA],
 
-  async onMessage(msg) {
-    const userBank = await loadUserBank(msg.author?.id);
-    const secondsSinceLastChat = userBank.lastEarning
-      ? differenceInSeconds(new Date(), userBank.lastEarning)
+  async onMessage({ message, user, updateUser }) {
+    const secondsSinceLastChat = user.lastEarning
+      ? differenceInSeconds(new Date(), user.lastEarning)
       : SECONDS_IN_HOUR;
 
     const chance = secondsSinceLastChat / SECONDS_IN_HOUR;
     const luck = Math.random();
 
     if (chance > luck) {
-      await saveUserBank({
-        ...userBank,
-        lastEarning: new Date(msg.createdTimestamp),
-        earnings: userBank.earnings + 10,
-        total: userBank.total + 10,
+      updateUser({
+        ...user,
+        lastEarning: new Date(message.createdTimestamp),
+        earnings: user.earnings + 10,
+        total: user.total + 10,
       });
-      console.log(new Date().toISOString(), `${msg.author.username} earnt 10`);
+      console.log(
+        new Date().toISOString(),
+        `${message.author.username} earnt 10`
+      );
     }
   },
 };
