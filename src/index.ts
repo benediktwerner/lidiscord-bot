@@ -44,13 +44,13 @@ client.on('message', async (message) => {
       plugin.channelIncludes &&
       !plugin.channelIncludes.includes(message.channel.id)
     ) {
-      return;
+      continue;
     }
     if (
       plugin.channelExcludes &&
       plugin.channelExcludes?.includes(message.channel.id)
     ) {
-      return;
+      continue;
     }
 
     try {
