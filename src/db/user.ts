@@ -9,6 +9,7 @@ export type User = {
   earnings: number;
   gambling: number;
   lastEarning: Date | null;
+  rolesAwarded: string[];
 };
 
 export async function loadUser(id: string): Promise<User> {
@@ -32,6 +33,7 @@ function expand(record: Partial<User> & { _id: string }): User {
     earnings: 0,
     gambling: 0,
     lastEarning: null,
+    rolesAwarded: [],
     ...record,
   });
 }

@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { exit } from 'process';
 
 import { loadUser, saveUser, User } from './db/user';
+import log from './lib/log';
 import pluginsProduction from './plugins.production';
 
 require('dotenv').config();
@@ -19,10 +20,10 @@ let plugins = pluginsProduction;
 try {
   plugins = require('./plugins.local').default;
 } catch (e) {}
-console.log(`Loaded ${plugins.length} plugins`);
+log(`Loaded ${plugins.length} plugins`);
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user?.tag}!`);
+  log(`Logged in as ${client.user?.tag}!`);
 });
 
 client.on('message', async (message) => {
@@ -30,8 +31,6 @@ client.on('message', async (message) => {
     // Skip bot messages
     return;
   }
-
-  // console.log('MESSAGE', msg);
 
   let userNeedsSaving = false;
   let user = await loadUser(message.author?.id);

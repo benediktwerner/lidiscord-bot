@@ -1,3 +1,4 @@
+import log from '../lib/log';
 import { Plugin } from './plugin';
 
 export default function (): Plugin {
@@ -6,8 +7,7 @@ export default function (): Plugin {
 
     onMessage({ message, user, updateUser }) {
       if (message.author.username !== user.name) {
-        console.log(
-          new Date().toISOString(),
+        log(
           `${user.name || user._id} is now known as ${message.author.username}`
         );
         updateUser({
