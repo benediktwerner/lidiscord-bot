@@ -25,6 +25,10 @@ export default function (rewards: Reward[]): Plugin {
         return user.total >= requirement && !user.rolesAwarded.includes(roleId);
       });
 
+      if (toApply.length === 0) {
+        return;
+      }
+
       for (const reward of toApply) {
         const role = message.guild?.roles.resolve(reward.roleId);
         log(`${user.name} has been rewarded ${role?.name || reward.roleId}`);
