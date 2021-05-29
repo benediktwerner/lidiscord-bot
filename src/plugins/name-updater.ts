@@ -7,9 +7,7 @@ export default function (): Plugin {
 
     onMessage({ message, user, updateUser }) {
       if (message.author.username !== user.name) {
-        log(
-          `${user.name || user._id} is now known as ${message.author.username}`
-        );
+        log(`${user.name} is now known as ${message.author.username}`);
         updateUser({
           ...user,
           name: message.author.username,

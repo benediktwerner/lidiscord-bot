@@ -13,16 +13,14 @@ export default function (rewards: Reward[]): Plugin {
     async onMessage({ message, user, updateUser }) {
       const member = message.guild?.members.resolve(message.author);
       if (!member) {
-        log(
-          `ERROR: Unable to load member information for ${
-            user.name || user._id
-          }`
-        );
+        log(`ERROR: Unable to load member information for ${user.name}`);
         return;
       }
 
       const toApply = rewards.filter(({ roleId, requirement }) => {
-        return user.total >= requirement && !user.rolesAwarded.includes(roleId);
+        return (
+          user.points >= requirement && !user.rolesAwarded.includes(roleId)
+        );
       });
 
       if (toApply.length === 0) {

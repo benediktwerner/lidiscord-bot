@@ -2,12 +2,27 @@ import Datastore from 'nedb-promises';
 
 let db = Datastore.create('data/userbank.db');
 
+export type UserRecord = Partial<User> & {
+  _id: string;
+
+  /**
+   * @deprecated
+   */
+  total?: number;
+  /**
+   * @deprecated
+   */
+  earnings?: number;
+  /**
+   * @deprecated
+   */
+  gambling?: number;
+};
+
 export type User = {
   _id: string;
-  name: string | null;
-  total: number;
-  earnings: number;
-  gambling: number;
+  name: string;
+  points: number;
   lastEarning: Date | null;
   rolesAwarded: string[];
 };
@@ -21,19 +36,17 @@ export async function saveUser(user: User): Promise<void> {
   await db.update({ _id: user._id }, user, { upsert: true });
 }
 
-export async function topUserTotals(): Promise<User[]> {
+export async function topUserPoints(): Promise<User[]> {
   const users = await db.find<Partial<User>>({}).sort({ total: -1 }).limit(10);
   return users.map(expand);
 }
 
-function expand(record: Partial<User> & { _id: string }): User {
+function expand(record: UserRecord): User {
   return Object.freeze({
-    name: null,
-    total: 0,
-    earnings: 0,
-    gambling: 0,
-    lastEarning: null,
-    rolesAwarded: [],
-    ...record,
+    _id: record._id,
+    name: record.name || record._id,
+    points: record.points || record.earnings || 0,
+    lastEarning: record.lastEarning || null,
+    rolesAwarded: record.rolesAwarded || [],
   });
 }

@@ -18,17 +18,16 @@ export default function (channelExcludes: string[], period: number): Plugin {
       const luck = Math.random();
 
       if (chance > luck) {
-        const newTotal = user.total + 10;
+        const newPoints = user.points + 10;
         updateUser({
           ...user,
           lastEarning: new Date(message.createdTimestamp),
-          earnings: user.earnings + 10,
-          total: newTotal,
+          points: newPoints,
         });
         log(
           `${message.author.username} earnt 10 in ${
             (message.channel as TextChannel).name || 'unknown'
-          }, they now have ${newTotal}`
+          }, they now have ${newPoints}`
         );
       }
     },

@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 
-import { topUserTotals } from '../db/user';
+import { topUserPoints } from '../db/user';
 import log from '../lib/log';
 import { Plugin } from './plugin';
 
@@ -16,9 +16,9 @@ export default function (): Plugin {
       // }
 
       if (isCommand(message) === 'top') {
-        const topUsers = await topUserTotals();
+        const topUsers = await topUserPoints();
         topUsers.forEach((user) => {
-          log(`${user.name || user._id}: ${user.total}`);
+          log(`${user.name}: ${user.points}`);
         });
       }
     },
