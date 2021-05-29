@@ -18,7 +18,7 @@ export default [
     excludeRoles: [ROLE_NEW_ROLE],
   }),
   roleEarner({
-    rewards: [{ roleId: ROLE_IMAGES, requirement: 200 }],
+    rewards: [{ roleId: ROLE_IMAGES, requirement: 150 }],
   }),
   bankInfo(),
 ];
