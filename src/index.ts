@@ -3,6 +3,7 @@ import { exit } from 'process';
 
 import { createUser, loadUser, saveUser, User } from './db/user';
 import log from './lib/log';
+import { getMessageData } from './message-util';
 import pluginsProduction from './plugins.production';
 
 require('dotenv').config();
@@ -43,22 +44,14 @@ client.on('message', async (message) => {
     user = newUser;
   };
 
-  for (let plugin of plugins) {
-    if (
-      plugin.channelIncludes &&
-      !plugin.channelIncludes.includes(message.channel.id)
-    ) {
-      continue;
-    }
-    if (
-      plugin.channelExcludes &&
-      plugin.channelExcludes?.includes(message.channel.id)
-    ) {
-      continue;
-    }
+  const messageData = getMessageData(message, user);
+  if (!messageData) {
+    return;
+  }
 
+  for (let plugin of plugins) {
     try {
-      await plugin.onMessage?.({ message, user, updateUser });
+      await plugin.onMessage?.(messageData, { updateUser });
     } catch (e) {
       console.error(`Plugin ${plugin.name} failed`, e);
     }

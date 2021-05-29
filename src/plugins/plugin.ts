@@ -1,14 +1,12 @@
-import { Message } from 'discord.js';
 import { User } from '../db/user';
+import { MessageData } from '../message-util';
 
 export type Plugin = {
   name: string;
-  channelIncludes?: string[];
-  channelExcludes?: string[];
-
-  onMessage?(data: {
-    message: Message;
-    user: User;
-    updateUser: (user: User) => void;
-  }): Promise<void>;
+  onMessage?(
+    data: MessageData,
+    actions: {
+      updateUser: (user: User) => void;
+    }
+  ): Promise<void>;
 };

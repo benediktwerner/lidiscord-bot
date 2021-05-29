@@ -1,15 +1,29 @@
 import { differenceInSeconds } from 'date-fns';
 import { TextChannel } from 'discord.js';
-import log from '../lib/log';
 
+import log from '../lib/log';
+import { memberHasAnyRole } from '../plugin-restrictions';
 import { Plugin } from './plugin';
 
-export default function (channelExcludes: string[], period: number): Plugin {
+export default function ({
+  period,
+  excludeChannels,
+  excludeRoles,
+}: {
+  period: number;
+  excludeChannels: string[];
+  excludeRoles: string[];
+}): Plugin {
   return {
     name: 'chat-earner',
-    channelExcludes,
+    async onMessage({ channel, message, member, user }, { updateUser }) {
+      if (
+        memberHasAnyRole(member, excludeRoles) ||
+        excludeChannels.includes(channel.id)
+      ) {
+        return;
+      }
 
-    async onMessage({ message, user, updateUser }) {
       const secondsSinceLastChat = user.lastEarning
         ? differenceInSeconds(new Date(), user.lastEarning)
         : period;

@@ -8,10 +8,17 @@ const SECONDS_IN_HOUR = 60 * 60;
 
 // Use `.roleid Name` to find role IDs
 const ROLE_IMAGES = '477557270943760386';
+const ROLE_NEW_ROLE = '695720622407417886';
 
 export default [
   nameUpdater(),
-  chatEarner([CHANNEL_DISCORD_GAMES_TRIVIA], SECONDS_IN_HOUR),
-  roleEarner([{ roleId: ROLE_IMAGES, requirement: 200 }]),
+  chatEarner({
+    period: SECONDS_IN_HOUR,
+    excludeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
+    excludeRoles: [ROLE_NEW_ROLE],
+  }),
+  roleEarner({
+    rewards: [{ roleId: ROLE_IMAGES, requirement: 200 }],
+  }),
   bankInfo(),
 ];

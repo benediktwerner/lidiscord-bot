@@ -6,11 +6,11 @@ type Reward = {
   roleId: string;
 };
 
-export default function (rewards: Reward[]): Plugin {
+export default function ({ rewards }: { rewards: Reward[] }): Plugin {
   return {
     name: 'role-earner',
 
-    async onMessage({ message, user, updateUser }) {
+    async onMessage({ message, user }, { updateUser }) {
       const member = message.guild?.members.resolve(message.author);
       if (!member) {
         log(`ERROR: Unable to load member information for ${user.name}`);
