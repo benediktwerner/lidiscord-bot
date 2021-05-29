@@ -3,10 +3,7 @@
 set -e
 set -u
 
-REQUEST=$1
-
-VERSION=$(npm version $REQUEST)
-VERSION=$(echo $VERSION | cut -c 2-)
+VERSION=$1
 
 echo "Releasing $VERSION"
 
@@ -17,6 +14,7 @@ then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
+git tag -am "Release $VERSION" v$VERSION
 git push origin v$VERSION
 
 docker pull node:14
