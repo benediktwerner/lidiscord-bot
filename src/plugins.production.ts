@@ -1,6 +1,6 @@
 import nameUpdater from './plugins/name-updater';
 import chatEarner from './plugins/chat-earner';
-import bankInfo from './plugins/bank-info';
+import pointsInfo from './plugins/points-info';
 import roleEarner from './plugins/role-earner';
 
 const CHANNEL_DISCORD_GAMES_TRIVIA = '493061298486116352';
@@ -20,5 +20,7 @@ export default [
   roleEarner({
     rewards: [{ roleId: ROLE_IMAGES, requirement: 150 }],
   }),
-  bankInfo(),
+  pointsInfo({
+    includeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
+  }),
 ];

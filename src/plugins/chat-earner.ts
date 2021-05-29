@@ -2,6 +2,7 @@ import { differenceInSeconds } from 'date-fns';
 import { TextChannel } from 'discord.js';
 
 import log from '../lib/log';
+import { isCommand } from '../message-util';
 import { memberHasAnyRole } from '../plugin-restrictions';
 import { Plugin } from './plugin';
 
@@ -19,7 +20,8 @@ export default function ({
     async onMessage({ channel, message, member, user }, { updateUser }) {
       if (
         memberHasAnyRole(member, excludeRoles) ||
-        excludeChannels.includes(channel.id)
+        excludeChannels.includes(channel.id) ||
+        isCommand(message)
       ) {
         return;
       }

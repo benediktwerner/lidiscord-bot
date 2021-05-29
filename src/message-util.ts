@@ -40,3 +40,14 @@ export function getMessageData(
     member,
   };
 }
+
+const PREFIX = '!!';
+const matcher = new RegExp(`${PREFIX}([a-zA-Z]+)( |$)`);
+
+export function isCommand(message: Message): string | null {
+  const match = message.content.match(matcher);
+  if (match) {
+    return match[1];
+  }
+  return null;
+}
