@@ -58,7 +58,6 @@ client.on('message', async (message) => {
   }
 
   if (userNeedsSaving) {
-    log(`Saving ${user.name}`);
     await saveUser(user);
   }
 });
