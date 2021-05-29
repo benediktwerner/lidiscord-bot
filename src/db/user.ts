@@ -27,9 +27,16 @@ export type User = {
   rolesAwarded: string[];
 };
 
-export async function loadUser(id: string): Promise<User> {
+export async function loadUser(id: string): Promise<User | null> {
   const record = await db.findOne<Partial<User> | null>({ _id: id });
-  return expand(record || { _id: id });
+  return record ? expand(record) : null;
+}
+
+export function createUser(id: string, name: string): User {
+  return expand({
+    _id: id,
+    name,
+  });
 }
 
 export async function saveUser(user: User): Promise<void> {

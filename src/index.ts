@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
 import { exit } from 'process';
 
-import { loadUser, saveUser, User } from './db/user';
+import { createUser, loadUser, saveUser, User } from './db/user';
 import log from './lib/log';
 import pluginsProduction from './plugins.production';
 
@@ -33,7 +33,11 @@ client.on('message', async (message) => {
   }
 
   let userNeedsSaving = false;
-  let user = await loadUser(message.author?.id);
+  let user = await loadUser(message.author.id);
+  if (!user) {
+    user = createUser(message.author.id, message.author.username);
+    userNeedsSaving = true;
+  }
   const updateUser = (newUser: User) => {
     userNeedsSaving = true;
     user = newUser;
