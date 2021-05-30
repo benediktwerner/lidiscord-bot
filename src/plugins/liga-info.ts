@@ -1,9 +1,47 @@
 import axios from 'axios';
-import { intervalToDuration, formatDuration } from 'date-fns';
+import { formatDuration, intervalToDuration } from 'date-fns';
+import { throttle } from 'lodash';
 
 import { Plugin } from './plugin';
 
 const TEAM_ID = 'lichess-discord-bundesliga-team';
+
+async function _getTournaments(): Promise<Tournament[]> {
+  const response = await axios.get<string>(
+    `https://lichess.org/api/team/${TEAM_ID}/arena?max=10`
+  );
+
+  const tournaments: Tournament[] = response.data
+    .split('\n')
+    .filter((x) => x)
+    .map((line) => JSON.parse(line));
+
+  return tournaments;
+}
+const getTournaments = throttle(_getTournaments, 1000 * 60 * 5, {
+  leading: true,
+  trailing: false,
+});
+
+type Tournament = {
+  id: string;
+  createdBy: string;
+  system: string;
+  minutes: number;
+  clock: { limit: number; increment: number };
+  rated: boolean;
+  fullName: string;
+  nbPlayers: number;
+  variant: { key: string; short: string; name: string };
+  startsAt: number;
+  finishesAt: number;
+  status: number;
+  perf: { icon: string; key: string; name: string; position: number };
+  winner?: { id: string; name: string; title: string };
+  secondsToStart?: number;
+  secondsToFinish?: number;
+  teamBattle?: { teams: string[]; nbLeaders: number };
+};
 
 export default function (): Plugin {
   return {
@@ -17,7 +55,7 @@ export default function (): Plugin {
 
       if (command === 'nextliga') {
         const tournaments = await getTournaments();
-        const upcoming = tournaments
+        const upcoming = tournaments!
           .filter(
             (tournament) => tournament.secondsToStart && tournament.teamBattle
           )
@@ -42,7 +80,7 @@ export default function (): Plugin {
 
       if (command === 'lastliga') {
         const tournaments = await getTournaments();
-        const historic = tournaments.filter(
+        const historic = tournaments!.filter(
           (tournament) => tournament.winner && tournament.teamBattle
         );
 
@@ -58,36 +96,3 @@ export default function (): Plugin {
     },
   };
 }
-
-async function getTournaments(): Promise<Tournament[]> {
-  const response = await axios.get<string>(
-    `https://lichess.org/api/team/${TEAM_ID}/arena?max=10`
-  );
-
-  const tournaments: Tournament[] = response.data
-    .split('\n')
-    .filter((x) => x)
-    .map((line) => JSON.parse(line));
-
-  return tournaments;
-}
-
-type Tournament = {
-  id: string;
-  createdBy: string;
-  system: string;
-  minutes: number;
-  clock: { limit: number; increment: number };
-  rated: boolean;
-  fullName: string;
-  nbPlayers: number;
-  variant: { key: string; short: string; name: string };
-  startsAt: number;
-  finishesAt: number;
-  status: number;
-  perf: { icon: string; key: string; name: string; position: number };
-  winner?: { id: string; name: string; title: string };
-  secondsToStart?: number;
-  secondsToFinish?: number;
-  teamBattle?: { teams: string[]; nbLeaders: number };
-};
