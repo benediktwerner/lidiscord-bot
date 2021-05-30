@@ -1,4 +1,3 @@
-import { isCommand } from '../message-util';
 import { Plugin } from './plugin';
 
 export default function ({
@@ -8,12 +7,10 @@ export default function ({
 }): Plugin {
   return {
     name: 'points-info',
-    async onMessage({ channel, message, user }) {
+    async onMessage({ channel, command, message, user }) {
       if (!includeChannels.includes(channel.id)) {
         return;
       }
-
-      const command = isCommand(message);
 
       if (command === 'points') {
         message.reply(`you have ${user.points} points`);

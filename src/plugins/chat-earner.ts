@@ -2,7 +2,6 @@ import { differenceInSeconds } from 'date-fns';
 import { TextChannel } from 'discord.js';
 
 import log from '../lib/log';
-import { isCommand } from '../message-util';
 import { memberHasAnyRole } from '../plugin-restrictions';
 import { Plugin } from './plugin';
 
@@ -17,11 +16,14 @@ export default function ({
 }): Plugin {
   return {
     name: 'chat-earner',
-    async onMessage({ channel, message, member, user }, { updateUser }) {
+    async onMessage(
+      { channel, command, message, member, user },
+      { updateUser }
+    ) {
       if (
         memberHasAnyRole(member, excludeRoles) ||
         excludeChannels.includes(channel.id) ||
-        isCommand(message)
+        command
       ) {
         return;
       }

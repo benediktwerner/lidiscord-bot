@@ -2,6 +2,7 @@ import nameUpdater from './plugins/name-updater';
 import chatEarner from './plugins/chat-earner';
 import pointsInfo from './plugins/points-info';
 import roleEarner from './plugins/role-earner';
+import ligaInfo from './plugins/liga-info';
 
 const CHANNEL_DISCORD_GAMES_TRIVIA = '493061298486116352';
 const SECONDS_IN_HOUR = 60 * 60;
@@ -23,4 +24,5 @@ export default [
   pointsInfo({
     includeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
   }),
+  ligaInfo(),
 ];

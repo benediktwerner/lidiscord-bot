@@ -8,6 +8,7 @@ export type MessageData = {
   guild: Guild;
   channel: GuildChannel;
   member: GuildMember;
+  command: string | null;
 };
 
 export function getMessageData(
@@ -38,13 +39,14 @@ export function getMessageData(
     guild,
     channel,
     member,
+    command: isCommand(message),
   };
 }
 
 const PREFIX = '!!';
 const matcher = new RegExp(`${PREFIX}([a-zA-Z]+)( |$)`);
 
-export function isCommand(message: Message): string | null {
+function isCommand(message: Message): string | null {
   const match = message.content.match(matcher);
   if (match) {
     return match[1];
