@@ -10,6 +10,7 @@ const SECONDS_IN_HOUR = 60 * 60;
 // Use `.roleid Name` to find role IDs
 const ROLE_IMAGES = '477557270943760386';
 const ROLE_NEW_ROLE = '695720622407417886';
+const ROLE_LIGA_WARRIOR = '766333186237399043';
 
 export default [
   nameUpdater(),
@@ -24,5 +25,5 @@ export default [
   pointsInfo({
     includeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
   }),
-  ligaInfo(),
+  ligaInfo({ ligaWarriorRole: ROLE_LIGA_WARRIOR }),
 ];

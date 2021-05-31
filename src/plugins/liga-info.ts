@@ -59,13 +59,18 @@ type Tournament = {
   teamBattle?: { teams: string[]; nbLeaders: number };
 };
 
-export default function (): Plugin {
+export default function ({
+  ligaWarriorRole,
+}: {
+  ligaWarriorRole: string;
+}): Plugin {
   return {
     name: 'liga-info',
-    async onMessage({ command, message }) {
+    async onMessage({ command, member, message }) {
       if (command === 'liga') {
         message.channel.send(
-          `The Lichess Discord Bundesliga Team can be found at https://lichess.org/team/${TEAM_ID}`
+          `The Lichess Discord Bundesliga Team can be found at https://lichess.org/team/${TEAM_ID}\n` +
+            `Use !joinliga to be notified when tournaments are starting.`
         );
       }
 
@@ -102,6 +107,18 @@ export default function (): Plugin {
         } else {
           message.channel.send(`There is was no previous Liga tournament`);
         }
+      }
+
+      if (command === 'joinliga') {
+        await member.roles.add(ligaWarriorRole);
+        message.reply('welcome to the team!');
+      }
+
+      if (command === 'leaveliga') {
+        await member.roles.remove(ligaWarriorRole);
+        message.reply(
+          'you will no longer be notified of tournaments :pensive:'
+        );
       }
     },
   };
