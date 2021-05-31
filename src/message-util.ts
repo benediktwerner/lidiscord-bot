@@ -43,7 +43,7 @@ export function getMessageData(
   };
 }
 
-const PREFIX = '!!';
+const PREFIX = '!';
 const matcher = new RegExp(`${PREFIX}([a-zA-Z]+)( |$)`);
 
 function isCommand(message: Message): string | null {
