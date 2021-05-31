@@ -48,8 +48,8 @@ export default function (): Plugin {
     name: 'liga-info',
     async onMessage({ command, message }) {
       if (command === 'liga') {
-        message.reply(
-          `the Lichess Discord Bundesliga Team can be found at https://lichess.org/team/${TEAM_ID}`
+        message.channel.send(
+          `The Lichess Discord Bundesliga Team can be found at https://lichess.org/team/${TEAM_ID}`
         );
       }
 
@@ -70,11 +70,11 @@ export default function (): Plugin {
             }),
             { format: ['days', 'hours', 'minutes'] }
           );
-          message.reply(
-            `the next Liga tournament is in ${whenString} - https://lichess.org/tournament/${next.id}`
+          message.channel.send(
+            `The next Liga tournament is in ${whenString} - https://lichess.org/tournament/${next.id}`
           );
         } else {
-          message.reply(`there is no Liga tourament scheduled`);
+          message.channel.send(`There is no Liga tourament scheduled`);
         }
       }
 
@@ -86,11 +86,11 @@ export default function (): Plugin {
 
         if (historic.length) {
           const last = historic[0];
-          message.reply(
-            `the last Liga tournament was https://lichess.org/tournament/${last.id}`
+          message.channel.send(
+            `The last Liga tournament was https://lichess.org/tournament/${last.id}`
           );
         } else {
-          message.reply(`there is was no previous Liga tournament`);
+          message.channel.send(`There is was no previous Liga tournament`);
         }
       }
     },
