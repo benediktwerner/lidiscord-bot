@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { formatDuration, intervalToDuration } from 'date-fns';
+import { formatDuration, intervalToDuration, isPast } from 'date-fns';
 import { throttle } from 'lodash';
 
 import { Plugin } from './plugin';
@@ -22,6 +22,22 @@ const getTournaments = throttle(_getTournaments, 1000 * 60 * 5, {
   leading: true,
   trailing: false,
 });
+
+async function getNextLigaTournament(): Promise<Tournament | null> {
+  const finished = (await getTournaments()!)
+    .reverse()
+    .filter(
+      (tournament) => tournament.teamBattle && !isPast(tournament.finishesAt)
+    );
+  return finished[0] || null;
+}
+
+async function getLastLigaTournament(): Promise<Tournament | null> {
+  const unfinished = (await getTournaments()!).filter(
+    (tournament) => tournament.teamBattle && isPast(tournament.finishesAt)
+  );
+  return unfinished[0] || null;
+}
 
 type Tournament = {
   id: string;
@@ -54,38 +70,32 @@ export default function (): Plugin {
       }
 
       if (command === 'nextliga') {
-        const tournaments = await getTournaments();
-        const upcoming = tournaments!
-          .filter(
-            (tournament) => tournament.secondsToStart && tournament.teamBattle
-          )
-          .reverse();
-
-        if (upcoming.length) {
-          const next = upcoming[0];
-          const whenString = formatDuration(
-            intervalToDuration({
-              start: new Date(),
-              end: new Date(next.startsAt),
-            }),
-            { format: ['days', 'hours', 'minutes'] }
-          );
-          message.channel.send(
-            `The next Liga tournament is in ${whenString} - https://lichess.org/tournament/${next.id}`
-          );
+        const next = await getNextLigaTournament();
+        if (next) {
+          if (isPast(next.startsAt)) {
+            message.channel.send(
+              `The next Liga tournament is live now! - https://lichess.org/tournament/${next.id}`
+            );
+          } else {
+            const whenString = formatDuration(
+              intervalToDuration({
+                start: new Date(),
+                end: new Date(next.startsAt),
+              }),
+              { format: ['days', 'hours', 'minutes'] }
+            );
+            message.channel.send(
+              `The next Liga tournament is in ${whenString} - https://lichess.org/tournament/${next.id}`
+            );
+          }
         } else {
-          message.channel.send(`There is no Liga tourament scheduled`);
+          message.channel.send(`There is no Liga tournament scheduled`);
         }
       }
 
       if (command === 'lastliga') {
-        const tournaments = await getTournaments();
-        const historic = tournaments!.filter(
-          (tournament) => tournament.winner && tournament.teamBattle
-        );
-
-        if (historic.length) {
-          const last = historic[0];
+        const last = await getLastLigaTournament();
+        if (last) {
           message.channel.send(
             `The last Liga tournament was https://lichess.org/tournament/${last.id}`
           );
