@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { formatDuration, intervalToDuration, isPast } from 'date-fns';
+import { format, formatDuration, intervalToDuration, isPast } from 'date-fns';
+import { MessageEmbed } from 'discord.js';
 import { throttle } from 'lodash';
 
 import { Plugin } from './plugin';
@@ -24,19 +25,17 @@ const getTournaments = throttle(_getTournaments, 1000 * 60 * 5, {
 });
 
 async function getNextLigaTournament(): Promise<Tournament | null> {
-  const finished = (await getTournaments()!)
-    .reverse()
-    .filter(
-      (tournament) => tournament.teamBattle && !isPast(tournament.finishesAt)
-    );
-  return finished[0] || null;
+  const unfinished = (await getTournaments()!).filter(
+    (tournament) => tournament.teamBattle && !isPast(tournament.finishesAt)
+  );
+  return unfinished[unfinished.length - 1] || null;
 }
 
 async function getLastLigaTournament(): Promise<Tournament | null> {
-  const unfinished = (await getTournaments()!).filter(
+  const finished = (await getTournaments()!).filter(
     (tournament) => tournament.teamBattle && isPast(tournament.finishesAt)
   );
-  return unfinished[0] || null;
+  return finished[0] || null;
 }
 
 type Tournament = {
@@ -68,10 +67,22 @@ export default function ({
     name: 'liga-info',
     async onMessage({ command, member, message }) {
       if (command === 'liga') {
-        message.channel.send(
-          `The Lichess Discord Bundesliga Team can be found at https://lichess.org/team/${TEAM_ID}\n` +
-            `Use !joinliga to be notified when tournaments are starting.`
-        );
+        const next = await getNextLigaTournament();
+        const last = await getLastLigaTournament();
+
+        const embed = new MessageEmbed() // Set the main content of the embed
+          .setTitle('Lichess Discord Bundesliga Team')
+          .setColor(0x8ab7ff)
+          .setDescription(
+            `
+On Thursdays and Sundays members of the server play together in the Lichess Bundesliga. You can join the team on [lichess.org](https://lichess.org/team/${TEAM_ID}).
+If you want to be notified on Discord before tournaments, use !joinliga.
+`
+          )
+          .addField('Next tournament', getTournamentField(next), true)
+          .addField('Last tournament', getTournamentField(last), true);
+
+        message.channel.send(embed);
       }
 
       if (command === 'nextliga') {
@@ -79,7 +90,9 @@ export default function ({
         if (next) {
           if (isPast(next.startsAt)) {
             message.channel.send(
-              `The next Liga tournament is live now! - https://lichess.org/tournament/${next.id}`
+              `The next Liga tournament is live now! - ${getTournamentLink(
+                next
+              )}`
             );
           } else {
             const whenString = formatDuration(
@@ -90,7 +103,9 @@ export default function ({
               { format: ['days', 'hours', 'minutes'] }
             );
             message.channel.send(
-              `The next Liga tournament is in ${whenString} - https://lichess.org/tournament/${next.id}`
+              `The next Liga tournament is in ${whenString} - ${getTournamentLink(
+                next
+              )}`
             );
           }
         } else {
@@ -102,7 +117,7 @@ export default function ({
         const last = await getLastLigaTournament();
         if (last) {
           message.channel.send(
-            `The last Liga tournament was https://lichess.org/tournament/${last.id}`
+            `The last Liga tournament was ${getTournamentLink(last)}`
           );
         } else {
           message.channel.send(`There is was no previous Liga tournament`);
@@ -122,4 +137,21 @@ export default function ({
       }
     },
   };
+}
+
+function getTournamentField(tournament: Tournament | null): string {
+  if (!tournament) {
+    return 'None';
+  }
+
+  const timeControl = `${tournament.clock.limit / 60}+${
+    tournament.clock.increment
+  }`;
+  const date = format(tournament.startsAt, 'do LLLL');
+  const link = getTournamentLink(tournament);
+  return `[${date}, ${timeControl}](${link})`;
+}
+
+function getTournamentLink(tournament: Tournament): string {
+  return `https://lichess.org/tournament/${tournament.id}`;
 }
