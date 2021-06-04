@@ -3,6 +3,7 @@ import chatEarner from './plugins/chat-earner';
 import pointsInfo from './plugins/points-info';
 import roleEarner from './plugins/role-earner';
 import ligaInfo from './plugins/liga-info';
+import customResponses from './plugins/custom-responses';
 
 const CHANNEL_DISCORD_GAMES_TRIVIA = '493061298486116352';
 const SECONDS_IN_HOUR = 60 * 60;
@@ -11,6 +12,8 @@ const SECONDS_IN_HOUR = 60 * 60;
 const ROLE_IMAGES = '477557270943760386';
 const ROLE_NEW_ROLE = '695720622407417886';
 const ROLE_LIGA_WARRIOR = '766333186237399043';
+const ROLE_CHAT_MOD = '473908351307087884';
+const ROLE_ADMIN = '280718008727633921';
 
 export default [
   nameUpdater(),
@@ -26,4 +29,7 @@ export default [
     includeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
   }),
   ligaInfo({ ligaWarriorRole: ROLE_LIGA_WARRIOR }),
+  customResponses({
+    adminRoles: [ROLE_CHAT_MOD, ROLE_ADMIN],
+  }),
 ];
