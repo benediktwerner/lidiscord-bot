@@ -1,12 +1,8 @@
-import { User } from '../db/user';
-import { MessageData } from '../message-util';
+import { MessageData, MessageActions } from '../engine/message-util';
 
 export type Plugin = {
   name: string;
-  onMessage?(
-    data: MessageData,
-    actions: {
-      updateUser: (user: User) => void;
-    }
-  ): Promise<void>;
+  onMessage?(data: MessageData, actions: MessageActions): Promise<void>;
+
+  onMessageDelete?(data: MessageData, actions: MessageActions): Promise<void>;
 };

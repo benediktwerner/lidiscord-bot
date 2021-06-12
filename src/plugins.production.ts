@@ -4,8 +4,10 @@ import pointsInfo from './plugins/points-info';
 import roleEarner from './plugins/role-earner';
 import ligaInfo from './plugins/liga-info';
 import customResponses from './plugins/custom-responses';
+import ghostPingDetection from './plugins/ghost-ping-detection';
 
 const CHANNEL_DISCORD_GAMES_TRIVIA = '493061298486116352';
+const CHANNEL_NEW_PEEPS = '508080534648258563';
 const SECONDS_IN_HOUR = 60 * 60;
 
 // Use `.roleid Name` to find role IDs
@@ -31,5 +33,8 @@ export default [
   ligaInfo({ ligaWarriorRole: ROLE_LIGA_WARRIOR }),
   customResponses({
     adminRoles: [ROLE_CHAT_MOD, ROLE_ADMIN],
+  }),
+  ghostPingDetection({
+    logChannel: CHANNEL_NEW_PEEPS,
   }),
 ];

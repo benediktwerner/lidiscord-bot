@@ -1,6 +1,6 @@
 import { Guild, GuildChannel, GuildMember, Message } from 'discord.js';
-import { User } from './db/user';
-import log from './lib/log';
+import { User } from '../db/user';
+import log from '../lib/log';
 
 export type MessageData = {
   message: Message;
@@ -9,6 +9,10 @@ export type MessageData = {
   channel: GuildChannel;
   member: GuildMember;
   command: string | null;
+};
+
+export type MessageActions = {
+  updateUser: (user: User) => void;
 };
 
 export function getMessageData(

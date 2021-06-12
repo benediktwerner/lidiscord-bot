@@ -1,10 +1,10 @@
 import { Client } from 'discord.js';
 import { exit } from 'process';
 
-import { createUser, loadUser, saveUser, User } from './db/user';
 import log from './lib/log';
-import { getMessageData } from './message-util';
+import { getMessageData } from './engine/message-util';
 import pluginsProduction from './plugins.production';
+import { withUser, forEachPlugin } from './engine/message-handlers';
 
 require('dotenv').config();
 
@@ -15,7 +15,7 @@ if (!DISCORD_BOT_TOKEN) {
   exit(1);
 }
 
-const client = new Client();
+const client = new Client({ partials: ['MESSAGE', 'CHANNEL'] });
 
 let plugins = pluginsProduction;
 try {
@@ -33,33 +33,41 @@ client.on('message', async (message) => {
     return;
   }
 
-  let userNeedsSaving = false;
-  let user = await loadUser(message.author.id);
-  if (!user) {
-    user = createUser(message.author.id, message.author.username);
-    userNeedsSaving = true;
-  }
-  const updateUser = (newUser: User) => {
-    userNeedsSaving = true;
-    user = newUser;
-  };
+  return withUser(message, async (user, updateUser) => {
+    const messageData = getMessageData(message, user);
+    if (!messageData) {
+      return;
+    }
 
-  const messageData = getMessageData(message, user);
-  if (!messageData) {
+    await forEachPlugin(
+      plugins,
+      async (plugin) => await plugin.onMessage?.(messageData, { updateUser })
+    );
+  });
+});
+
+client.on('messageDelete', async (message) => {
+  if (message.partial) {
+    log(`Message ${message.id} was deleted but was a partial`);
+    return;
+  }
+  if (message.author.bot) {
+    // Skip bot messages
     return;
   }
 
-  for (let plugin of plugins) {
-    try {
-      await plugin.onMessage?.(messageData, { updateUser });
-    } catch (e) {
-      console.error(`Plugin ${plugin.name} failed`, e);
+  return withUser(message, async (user, updateUser) => {
+    const messageData = getMessageData(message, user);
+    if (!messageData) {
+      return;
     }
-  }
 
-  if (userNeedsSaving) {
-    await saveUser(user);
-  }
+    await forEachPlugin(
+      plugins,
+      async (plugin) =>
+        await plugin.onMessageDelete?.(messageData, { updateUser })
+    );
+  });
 });
 
 client.login(DISCORD_BOT_TOKEN);
