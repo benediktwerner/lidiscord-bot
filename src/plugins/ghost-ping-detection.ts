@@ -12,9 +12,9 @@ export default function ({ logChannel }: { logChannel: string }): Plugin {
 
       if (mentions.length && target?.isText()) {
         target.send(
-          `${message.author.username} deleted a message in ${
+          `Message from ${message.author.username} in ${
             channel.name
-          } that mentions ${mentions.join(', ')}`
+          } that mentions ${mentions.join(', ')} was deleted`
         );
       }
     },
