@@ -8,9 +8,9 @@ export default function ({ logChannel }: { logChannel: string }): Plugin {
       const mentions = Array.from(message.mentions.users.values()).map(
         (x) => x.username
       );
-
       const target = guild.channels.cache.get(logChannel);
-      if (target?.isText()) {
+
+      if (mentions.length && target?.isText()) {
         target.send(
           `${message.author.username} deleted a message in ${
             channel.name
