@@ -82,7 +82,7 @@ If you want to be notified on Discord before tournaments, use !joinliga.
           .addField('Next tournament', getTournamentField(next), true)
           .addField('Last tournament', getTournamentField(last), true);
 
-        message.channel.send(embed);
+        message.channel.send({ embeds: [embed] });
       }
 
       if (command === 'nextliga') {

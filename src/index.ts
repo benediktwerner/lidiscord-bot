@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 import { exit } from 'process';
 
 import log from './lib/log';
@@ -15,7 +15,10 @@ if (!DISCORD_BOT_TOKEN) {
   exit(1);
 }
 
-const client = new Client({ partials: ['MESSAGE', 'CHANNEL'] });
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  partials: ['MESSAGE', 'CHANNEL'],
+});
 
 let plugins = pluginsProduction;
 try {
@@ -27,7 +30,7 @@ client.on('ready', () => {
   log(`Logged in as ${client.user?.tag}!`);
 });
 
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
   if (message.author.bot) {
     // Skip bot messages
     return;

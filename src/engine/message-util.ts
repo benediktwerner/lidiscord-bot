@@ -1,4 +1,10 @@
-import { Guild, GuildChannel, GuildMember, Message } from 'discord.js';
+import {
+  Guild,
+  GuildChannel,
+  GuildMember,
+  Message,
+  ThreadChannel,
+} from 'discord.js';
 import { User } from '../db/user';
 import log from '../lib/log';
 
@@ -6,7 +12,7 @@ export type MessageData = {
   message: Message;
   user: User;
   guild: Guild;
-  channel: GuildChannel;
+  channel: GuildChannel | ThreadChannel;
   member: GuildMember;
   command: string | null;
 };

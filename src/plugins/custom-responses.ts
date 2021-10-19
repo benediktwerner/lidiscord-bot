@@ -28,7 +28,7 @@ export default function ({ adminRoles }: { adminRoles: string[] }): Plugin {
             .setTitle(response.title)
             .setColor(response.colour)
             .setDescription(response.body);
-          await message.channel.send(embed);
+          await message.channel.send({ embeds: [embed] });
         }
       }
     },
