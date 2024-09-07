@@ -1,5 +1,10 @@
 import { Message, MessageEmbed } from 'discord.js';
-import { loadResponse, saveResponse } from '../db/response';
+import {
+  loadResponse,
+  loadResponses,
+  removeResponse,
+  saveResponse,
+} from '../db/response';
 import { memberHasAnyRole } from '../plugin-restrictions';
 import { Plugin } from './plugin';
 
@@ -19,6 +24,14 @@ export default function ({ adminRoles }: { adminRoles: string[] }): Plugin {
 
       if (isAdmin && command === 'show-response') {
         return await showResponse(message);
+      }
+
+      if (isAdmin && command === 'list-responses') {
+        return await listResponses(message);
+      }
+
+      if (isAdmin && command === 'delete-response') {
+        return await deleteResponse(message);
       }
 
       if (command) {
@@ -75,4 +88,19 @@ async function showResponse(message: Message): Promise<void> {
   } else {
     await message.reply('no response found');
   }
+}
+
+async function listResponses(message: Message): Promise<void> {
+  const responses = await loadResponses();
+  if (!responses.length) {
+    await message.reply('no responses found');
+  } else {
+    await message.reply(responses.map((r) => `- ${r._id}`).join('\n'));
+  }
+}
+
+async function deleteResponse(message: Message): Promise<void> {
+  const [_, target] = message.content.split(' ', 3);
+  const success = await removeResponse(target.toLowerCase());
+  await message.reply(success ? 'response deleted' : 'no response found');
 }
