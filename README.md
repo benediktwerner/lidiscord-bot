@@ -1,3 +1,3 @@
 # enbotsant
 
-A bot for the lichess discord.
+A bot for the Lichess Discord.
