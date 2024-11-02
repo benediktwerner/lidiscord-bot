@@ -1,19 +1,16 @@
-import log from '../lib/log';
-import { Plugin } from './plugin';
+import { updateName } from '../db/users.js';
+import log from '../log.js';
+import { Plugin } from './plugin.js';
 
 export default function (): Plugin {
-  return {
-    name: 'name-updater',
+    return {
+        name: 'name-updater',
 
-    onMessage({ message, user }, { updateUser }) {
-      if (message.author.username !== user.name) {
-        log(`${user.name} is now known as ${message.author.username}`);
-        updateUser({
-          ...user,
-          name: message.author.username,
-        });
-      }
-      return Promise.resolve();
-    },
-  };
+        async onMessage({ message, user }) {
+            if (message.author.username !== user.name) {
+                log(`${user.name} is now known as ${message.author.username}`);
+                updateName(user.id, message.author.username);
+            }
+        },
+    };
 }

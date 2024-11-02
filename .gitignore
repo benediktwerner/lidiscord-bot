@@ -1,5 +1,6 @@
 .env
-data
 dist
 node_modules
-src/plugins.local.ts
+*.db
+*.db-shm
+*.db-wal

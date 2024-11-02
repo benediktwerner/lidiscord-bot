@@ -1,106 +1,100 @@
-import { Message, MessageEmbed } from 'discord.js';
-import {
-  loadResponse,
-  loadResponses,
-  removeResponse,
-  saveResponse,
-} from '../db/response';
-import { memberHasAnyRole } from '../plugin-restrictions';
-import { Plugin } from './plugin';
+import { APIEmbed, escapeMarkdown, Message } from 'discord.js';
+import * as responsesDb from '../db/responses.js';
+import { memberHasAnyRole } from '../utils/members.js';
+import { Plugin } from './plugin.js';
+
+const EMBED_COLOR = 0x00b7d1;
 
 export default function ({ adminRoles }: { adminRoles: string[] }): Plugin {
-  return {
-    name: 'custom-responses',
-    async onMessage({ command, member, message }) {
-      const isAdmin = memberHasAnyRole(member, adminRoles);
+    return {
+        name: 'custom-responses',
 
-      if (isAdmin && command === 'set-response') {
-        return await setResponse(message);
-      }
+        async onMessage({ command, member, message }) {
+            if (!command) {
+                return;
+            }
 
-      if (isAdmin && command === 'set-response-colour') {
-        return await setResponseColour(message);
-      }
+            const isAdmin = memberHasAnyRole(member, adminRoles);
 
-      if (isAdmin && command === 'show-response') {
-        return await showResponse(message);
-      }
+            if (isAdmin) {
+                switch (command) {
+                    case 'set-response':
+                        await setResponse(message);
+                        return;
+                    case 'show-response':
+                        await showResponse(message);
+                        return;
+                    case 'list-responses':
+                        await listResponses(message);
+                        return;
+                    case 'delete-response':
+                        await deleteResponse(message);
+                        return;
+                }
+            }
 
-      if (isAdmin && command === 'list-responses') {
-        return await listResponses(message);
-      }
-
-      if (isAdmin && command === 'delete-response') {
-        return await deleteResponse(message);
-      }
-
-      if (command) {
-        const response = await loadResponse(command);
-        if (response) {
-          const embed = new MessageEmbed()
-            .setTitle(response.title)
-            .setColor(response.colour)
-            .setDescription(response.body);
-          await message.channel.send({ embeds: [embed] });
-        }
-      }
-    },
-  };
+            const response = responsesDb.getResponse(command);
+            if (response) {
+                const embed: APIEmbed = {
+                    title: response.title,
+                    color: EMBED_COLOR,
+                    description: response.body,
+                };
+                await message.channel.send({ embeds: [embed] });
+            }
+        },
+    };
 }
 
-async function setResponse(message: Message): Promise<void> {
-  const [commandLine, ...bodyLines] = message.content.split('\n');
-  const [_, target, ...titleWords] = commandLine.split(' ');
+async function setResponse(message: Message) {
+    const [commandLine, ...bodyLines] = message.content.split('\n');
+    const [_, target, ...titleWords] = commandLine!.split(' ');
 
-  await saveResponse({
-    _id: target.toLowerCase(),
-    title: titleWords.join(' '),
-    body: bodyLines.join('\n'),
-    colour: 0x00b7d1,
-  });
+    if (!target || titleWords.length === 0) {
+        await message.reply('Invalid !set-response: Missing target or title');
+        return;
+    }
 
-  await message.reply(`!${target.toLowerCase()} saved`);
-}
-
-async function setResponseColour(message: Message): Promise<void> {
-  const [_, target, colour] = message.content.split(' ', 3);
-  const response = await loadResponse(target.toLowerCase());
-
-  if (response) {
-    await saveResponse({
-      ...response,
-      colour: +colour,
+    responsesDb.setResponse({
+        command: target.toLowerCase(),
+        title: titleWords.join(' '),
+        body: bodyLines.join('\n'),
     });
-    await message.reply(`!${target.toLowerCase()} colour saved`);
-  } else {
-    await message.reply('no response found');
-  }
+
+    await message.reply(`!${target.toLowerCase()} saved`);
 }
 
 async function showResponse(message: Message): Promise<void> {
-  const [_, target] = message.content.split(' ', 3);
-  const response = await loadResponse(target.toLowerCase());
+    const [_, target] = message.content.split(/\s+/, 3);
+    if (!target) {
+        await message.reply('Please specify the response to show: `!show-response some-response-name`');
+        return;
+    }
 
-  if (response) {
-    await message.channel.send(
-      '```\n' + response.title + '\n' + response.body + '\n```'
-    );
-  } else {
-    await message.reply('no response found');
-  }
+    const response = responsesDb.getResponse(target.toLowerCase());
+
+    if (response) {
+        await message.reply('```\n' + escapeMarkdown(response.title) + '\n' + escapeMarkdown(response.body) + '\n```');
+    } else {
+        await message.reply('Response not found');
+    }
 }
 
 async function listResponses(message: Message): Promise<void> {
-  const responses = await loadResponses();
-  if (!responses.length) {
-    await message.reply('no responses found');
-  } else {
-    await message.reply(responses.map((r) => `- ${r._id}`).join('\n'));
-  }
+    const responses = responsesDb.getResponses();
+    if (!responses.length) {
+        await message.reply('No responses found');
+    } else {
+        await message.reply(responses.map((r) => `- ${r.command}`).join('\n'));
+    }
 }
 
 async function deleteResponse(message: Message): Promise<void> {
-  const [_, target] = message.content.split(' ', 3);
-  const success = await removeResponse(target.toLowerCase());
-  await message.reply(success ? 'response deleted' : 'no response found');
+    const [_, target] = message.content.split(' ', 3);
+    if (!target) {
+        await message.reply('Please specify the response to delete: `!delete-response some-response-name`');
+        return;
+    }
+    const success = responsesDb.deleteResponse(target.toLowerCase());
+    await message.reply(success ? 'Response deleted' : 'Response not found');
 }
