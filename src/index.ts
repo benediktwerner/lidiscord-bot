@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Options, Partials } from 'discord.js';
 import 'dotenv/config';
 import { exit } from 'process';
 import { deleteUser } from './db/users.js';
@@ -31,6 +31,10 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
     ],
     partials: [Partials.Message],
+    makeCache: Options.cacheWithLimits({
+        ...Options.DefaultMakeCacheSettings,
+        MessageManager: 10_000, // cache last 10k messages for deletion log
+    }),
 });
 
 client.on(Events.ClientReady, () => {
