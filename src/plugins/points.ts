@@ -40,7 +40,7 @@ export default function ({
                 `${message.author.username} earned ${amount} points in ${message.channel.name} for a new total of ${newPoints}`
             );
 
-            const awardedRoleIds = user.awardedRoleIds.split(',');
+            const awardedRoleIds = user.awardedRoleIds ? user.awardedRoleIds.split(',') : [];
             const rolesToAdd = rewards.filter(
                 ({ roleId, requirement }) => newPoints >= requirement && !awardedRoleIds.includes(roleId)
             );
