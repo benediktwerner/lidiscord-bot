@@ -20,7 +20,3 @@ Required permissions:
 - Send Messages
 - Send Messages in Threads
 - Read Message History
-
-## TODO
-
-- Handle partial messages in deletes
