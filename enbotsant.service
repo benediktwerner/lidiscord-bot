@@ -1,0 +1,19 @@
+[Unit]
+Description=Lidiscord Bot
+After=network.target
+
+[Service]
+User=enbotsant
+Group=enbotsant
+WorkingDirectory=/home/enbotsant/node
+ExecStart=/usr/bin/npm run start
+PrivateTmp=true
+PrivateDevices=true
+DevicePolicy=closed
+ProtectSystem=full
+CapabilityBoundingSet=
+NoNewPrivileges=true
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
