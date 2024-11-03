@@ -121,13 +121,13 @@ If you want to be notified on Discord before tournaments, use !joinliga.
                 if (last) {
                     message.channel.send(`The last Liga tournament was ${getTournamentLink(last)}`);
                 } else {
-                    message.channel.send('There is was no previous Liga tournament');
+                    message.channel.send('There was no previous Liga tournament');
                 }
             }
 
             if (command === 'joinliga') {
                 await member.roles.add(ligaWarriorRole);
-                message.reply('Welcome to the team!');
+                message.reply('Welcome to the team! (use !leaveliga to undo)');
             }
 
             if (command === 'leaveliga') {

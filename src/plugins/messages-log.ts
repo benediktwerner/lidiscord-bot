@@ -7,7 +7,7 @@ export default function ({ logChannel }: { logChannel: string }): Plugin {
         name: 'messages-log',
 
         async onMessageDelete({ message, channel, guild }) {
-            const target = guild.channels.cache.get(logChannel);
+            const target = guild.channels.resolve(logChannel);
 
             if (!target) {
                 log(`ERROR: Message log channel not found: ${logChannel}`);

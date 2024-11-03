@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
 import 'dotenv/config';
 import { exit } from 'process';
 import { deleteUser } from './db/users.js';
@@ -33,11 +33,11 @@ const client = new Client({
     partials: [Partials.Message],
 });
 
-client.on('ready', () => {
+client.on(Events.ClientReady, () => {
     log(`Logged in as ${client.user?.tag}`);
 });
 
-client.on('messageCreate', async (message) => {
+client.on(Events.MessageCreate, async (message) => {
     const messageData = getMessageData(message);
     if (!messageData) {
         return;
@@ -46,7 +46,7 @@ client.on('messageCreate', async (message) => {
     await forEachPlugin(async (plugin) => await plugin.onMessage?.(messageData));
 });
 
-client.on('messageDelete', async (message) => {
+client.on(Events.MessageDelete, async (message) => {
     if (message.partial) {
         log(`Message ${message.id} was deleted but was a partial`);
         return;
@@ -59,7 +59,7 @@ client.on('messageDelete', async (message) => {
     await forEachPlugin(async (plugin) => await plugin.onMessageDelete?.(messageData));
 });
 
-client.on('guildMemberRemove', (member) => deleteUser(member.id));
+client.on(Events.GuildMemberRemove, (member) => deleteUser(member.id));
 
 client.login(DISCORD_BOT_TOKEN);
 
