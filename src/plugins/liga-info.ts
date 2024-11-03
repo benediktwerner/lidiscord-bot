@@ -1,7 +1,6 @@
 import { format, formatDuration, intervalToDuration, isPast } from 'date-fns';
 import { APIEmbed } from 'discord.js';
 import { throttle } from 'lodash-es';
-import fetch from 'node-fetch';
 
 import log from '../log.js';
 import { Plugin } from './plugin.js';
