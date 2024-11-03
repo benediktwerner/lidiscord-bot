@@ -2,7 +2,7 @@ import customResponses from './plugins/custom-responses.js';
 import ligaInfo from './plugins/liga-info.js';
 import messagesLog from './plugins/messages-log.js';
 import nameUpdater from './plugins/name-updater.js';
-import { default as points } from './plugins/points.js';
+import points from './plugins/points.js';
 
 const CHANNEL_DISCORD_GAMES_TRIVIA = '493061298486116352';
 const CHANNEL_LOG = '1302655272707166330';
