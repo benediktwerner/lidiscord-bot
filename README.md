@@ -11,7 +11,7 @@ Use Node v22
 3. `npm run build`
 4. `npm start`
 
-Installation URL: https://discord.com/oauth2/authorize?client_id=1302310157338021968&permissions=275146411008&integration_type=0&scope=bot
+Installation URL: https://discord.com/oauth2/authorize?client_id=1302310157338021968&permissions=275146427392&integration_type=0&scope=bot
 
 Required permissions:
 
@@ -19,4 +19,5 @@ Required permissions:
 - View channels
 - Send Messages
 - Send Messages in Threads
+- Embed Links
 - Read Message History
