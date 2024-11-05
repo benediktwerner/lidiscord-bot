@@ -21,3 +21,4 @@ Required permissions:
 - Send Messages in Threads
 - Embed Links
 - Read Message History
+- Manage messages (only in the log channel)

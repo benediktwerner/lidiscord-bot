@@ -10,4 +10,9 @@ CREATE TABLE responses (
     command TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
     body TEXT NOT NULL
-)
+);
+
+CREATE TABLE logMessages (
+    messageId TEXT NOT NULL UNIQUE,
+    timestamp INT NOT NULL -- in milliseconds
+);

@@ -10,4 +10,4 @@ CREATE TABLE responses (
     command TEXT NOT NULL,
     title TEXT NOT NULL,
     body TEXT NOT NULL
-)
+);

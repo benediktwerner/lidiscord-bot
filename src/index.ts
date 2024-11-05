@@ -37,8 +37,10 @@ const client = new Client({
     }),
 });
 
-client.on(Events.ClientReady, () => {
+client.on(Events.ClientReady, async () => {
     log(`Logged in as ${client.user?.tag}`);
+
+    await forEachPlugin(async (plugin) => await plugin.onReady?.(client));
 });
 
 client.on(Events.MessageCreate, async (message) => {
