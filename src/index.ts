@@ -65,6 +65,20 @@ client.on(Events.MessageDelete, async (message) => {
     await forEachPlugin(async (plugin) => await plugin.onMessageDelete?.(messageData));
 });
 
+client.on(Events.MessageBulkDelete, async (messages) => {
+    const messagesList = [...messages.values()].filter(
+        (message) => !message.partial && !message.system && !message.author.bot && message.inGuild()
+    );
+    if (messagesList.length === 0) {
+        return;
+    }
+    const guild = messagesList[0]?.guild;
+    if (!guild) {
+        return;
+    }
+    await forEachPlugin(async (plugin) => await plugin.onMessageBulkDelete?.({ guild, messages: messagesList }));
+});
+
 client.on(Events.GuildMemberRemove, (member) => deleteUser(member.id));
 
 client.login(DISCORD_BOT_TOKEN);

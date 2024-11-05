@@ -1,4 +1,4 @@
-import { APIEmbed, ChannelManager, Client, Colors } from 'discord.js';
+import { ChannelManager, Client, Colors, EmbedBuilder, GuildMember, Message, User } from 'discord.js';
 import {
     deleteLogMessages,
     getLogMessagesOlderThan,
@@ -83,6 +83,47 @@ async function fillLogMessagesDb(client: Client, logChannelName: string) {
     });
 }
 
+function formatPrimaryUsernames(user: User, member: GuildMember | null): string {
+    return member?.nickname ? member?.nickname + ' • ' + user.displayName : user.displayName;
+}
+
+function formatAllUsernames(user: User, member: GuildMember | null): string {
+    const usernames: string[] = [];
+    if (member?.nickname) {
+        usernames.push(member.nickname);
+    }
+    if (user.globalName && !usernames.includes(user.globalName)) {
+        usernames.push(user.globalName);
+    }
+    if (!usernames.includes(user.username)) {
+        usernames.push(user.username);
+    }
+    if (!usernames.includes(user.tag)) {
+        usernames.push(user.tag);
+    }
+    return usernames.join(' • ');
+}
+
+async function logDeletedMessage(
+    message: Message<true>,
+    logChannel: NonNullable<ReturnType<typeof resolveLogChannel>>
+) {
+    const embed = new EmbedBuilder()
+        .setTitle(`Message deleted in ${message.channel}`)
+        .setColor(Colors.Red)
+        .setAuthor({
+            name: formatPrimaryUsernames(message.author, message.member),
+            iconURL: message.author.displayAvatarURL(),
+        })
+        .setDescription(
+            `${message.content}\n\nAuthor: ${message.author} (${formatAllUsernames(message.author, message.member)})`
+        )
+        .setFooter({ text: `Author ID: ${message.author.id} • Message ID: ${message.id}` })
+        .setTimestamp(message.createdAt);
+    const logMessage = await logChannel.send({ embeds: [embed] });
+    saveLogMessage(logMessage.id);
+}
+
 export default function ({ logChannel: logChannelName }: { logChannel: string }): Plugin {
     return {
         name: 'messages-log',
@@ -103,40 +144,26 @@ export default function ({ logChannel: logChannelName }: { logChannel: string })
             }, CLEANUP_INTERVAL_MILLIS);
         },
 
-        async onMessageDelete({ message, channel, guild }) {
+        async onMessageDelete({ message, guild }) {
+            const logChannel = resolveLogChannel(guild.channels, logChannelName);
+            if (!logChannel) {
+                return;
+            }
+            return await logDeletedMessage(message, logChannel);
+        },
+
+        async onMessageBulkDelete({ guild, messages }) {
             const logChannel = resolveLogChannel(guild.channels, logChannelName);
             if (!logChannel) {
                 return;
             }
 
-            const usernames: string[] = [];
-            let authorName = message.author.displayName;
-            if (message.member && message.member.nickname) {
-                const nickname = message.member.nickname;
-                if (nickname !== authorName) {
-                    authorName = nickname + ' • ' + authorName;
+            for (const message of messages.reverse()) {
+                if (message.partial || !message.inGuild()) {
+                    continue;
                 }
-                usernames.push(nickname);
+                await logDeletedMessage(message, logChannel);
             }
-            if (message.author.globalName && !usernames.includes(message.author.globalName)) {
-                usernames.push(message.author.globalName);
-            }
-            if (!usernames.includes(message.author.username)) {
-                usernames.push(message.author.username);
-            }
-            if (!usernames.includes(message.author.tag)) {
-                usernames.push(message.author.tag);
-            }
-
-            const embed: APIEmbed = {
-                title: `Message deleted in ${channel}`,
-                color: Colors.Red,
-                author: { name: authorName, icon_url: message.author.displayAvatarURL() },
-                description: `${message.content}\n\nAuthor: ${message.author} (${usernames.join(' • ')})`,
-                footer: { text: `Author ID: ${message.author.id} • Message ID: ${message.id}` },
-            };
-            const logMessage = await logChannel.send({ embeds: [embed] });
-            saveLogMessage(logMessage.id);
         },
     };
 }
