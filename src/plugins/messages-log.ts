@@ -77,7 +77,9 @@ async function fillLogMessagesDb(client: Client, logChannelName: string) {
 
     const messages = await logChannel.messages.fetch({ limit: 100 });
     messages.forEach((message) => {
-        saveLogMessage(message.id, message.createdTimestamp);
+        if (message.author.id === client.user?.id) {
+            saveLogMessage(message.id, message.createdTimestamp);
+        }
     });
 }
 
