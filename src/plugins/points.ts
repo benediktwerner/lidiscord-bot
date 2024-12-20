@@ -29,7 +29,7 @@ export default function ({
                 return;
             }
 
-            const secondsSinceLastPoints = (+new Date() - user.lastPointsTimestamp) / 1000 / 60;
+            const secondsSinceLastPoints = (+new Date() - user.lastPointsTimestamp) / 1000;
             const chance = secondsSinceLastPoints / period;
             if (chance < Math.random()) {
                 return;
