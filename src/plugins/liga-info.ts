@@ -1,4 +1,4 @@
-import { format, formatDuration, intervalToDuration, isPast } from 'date-fns';
+import { formatDuration, intervalToDuration, isPast } from 'date-fns';
 import { APIEmbed } from 'discord.js';
 import { throttle } from 'lodash-es';
 
