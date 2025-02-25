@@ -144,7 +144,7 @@ function getTournamentField(tournament: Tournament | null): string {
 
     const timeControl = `${tournament.clock.limit / 60}+${tournament.clock.increment}`;
     const link = getTournamentLink(tournament);
-    return `[<t:${tournament.startsAt}:D>, ${timeControl}](${link})`;
+    return `[<t:${Math.round(tournament.startsAt / 1000)}:D>, ${timeControl}](${link})`;
 }
 
 function getTournamentLink(tournament: Tournament): string {
