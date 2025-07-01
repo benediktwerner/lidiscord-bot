@@ -21,7 +21,7 @@ export default [
         amount: 10,
         excludeChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
         excludeRoles: [ROLE_NEW_ROLE],
-        rewards: [{ roleId: ROLE_IMAGES, requirement: 50 }],
+        rewards: [{ roleId: ROLE_IMAGES, requirement: 100 }],
     }),
     ligaInfo({ ligaWarriorRole: ROLE_LIGA_WARRIOR }),
     customResponses({
