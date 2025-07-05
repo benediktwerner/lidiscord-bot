@@ -15,7 +15,6 @@ export default [
     roleEarner({
         excludeMessagesInChannels: [],
         excludeUsersWithRoles: [],
-        minSecondsBetweenMessagesToCount: 10,
         rolesToEarn: [{ roleId: ROLE_TEST, minDaysSinceFirstActivity: 1, minMessageCount: 10 }],
     }),
     ligaInfo({ ligaWarriorRole: ROLE_LIGA }),

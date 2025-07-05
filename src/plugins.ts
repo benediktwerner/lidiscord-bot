@@ -18,7 +18,6 @@ export default [
     roleEarner({
         excludeMessagesInChannels: [CHANNEL_DISCORD_GAMES_TRIVIA],
         excludeUsersWithRoles: [ROLE_NEW_ROLE],
-        minSecondsBetweenMessagesToCount: 10,
         rolesToEarn: [
             { roleId: ROLE_IMAGES, minDaysSinceFirstActivity: 1, minMessageCount: 100 },
             { roleId: ROLE_IMAGES, minDaysSinceFirstActivity: 2, minMessageCount: 50 },

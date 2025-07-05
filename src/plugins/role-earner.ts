@@ -9,17 +9,13 @@ type Reward = {
     minMessageCount: number;
 };
 
-const lastCountedMessageCache = new Map<string, number>();
-
 export default function ({
     excludeMessagesInChannels,
     excludeUsersWithRoles,
-    minSecondsBetweenMessagesToCount,
     rolesToEarn,
 }: {
     excludeMessagesInChannels: string[];
     excludeUsersWithRoles: string[];
-    minSecondsBetweenMessagesToCount: number;
     rolesToEarn: Reward[];
 }): Plugin {
     return {
@@ -33,16 +29,6 @@ export default function ({
             ) {
                 return;
             }
-
-            const lastCountedTimestamp = lastCountedMessageCache.get(user.id);
-            if (lastCountedTimestamp && lastCountedTimestamp + minSecondsBetweenMessagesToCount * 1000 > +new Date()) {
-                return;
-            }
-
-            if (lastCountedMessageCache.size > 1_000) {
-                lastCountedMessageCache.clear();
-            }
-            lastCountedMessageCache.set(user.id, +new Date());
 
             const messageCount = addMessage(user.id);
 
