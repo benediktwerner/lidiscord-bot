@@ -1,8 +1,8 @@
 CREATE TABLE users (
     id TEXT NOT NULL,
     name TEXT NOT NULL,
-    points INT NOT NULL,
-    lastPointsTimestamp INT NOT NULL, -- in milliseconds
+    firstActivityTimestamp INT NOT NULL, -- in milliseconds
+    messageCount INT NOT NULL,
     awardedRoleIds TEXT NOT NULL -- comma separated
 );
 

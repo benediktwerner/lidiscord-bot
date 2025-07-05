@@ -4,17 +4,17 @@ import { db } from './db.js';
 export type User = {
     id: string;
     name: string;
-    points: number;
-    lastPointsTimestamp: number;
+    firstActivityTimestamp: number;
+    messageCount: number;
     awardedRoleIds: string; // comma separated
 };
 
 export function createUser(id: string, name: string): User {
     return db
         .prepare(
-            "INSERT INTO users (id, name, points, lastPointsTimestamp, awardedRoleIds) VALUES ($id, $name, 0, 0, '') RETURNING *"
+            "INSERT INTO users (id, name, firstActivityTimestamp, messageCount, awardedRoleIds) VALUES ($id, $name, $now, 0, '') RETURNING *"
         )
-        .get({ id, name }) as User;
+        .get({ id, name, now: +new Date() }) as User;
 }
 
 export function deleteUser(id: string) {
@@ -22,17 +22,11 @@ export function deleteUser(id: string) {
     log(`Deleted user ${id}: ${JSON.stringify(user)}`);
 }
 
-export function addPoints(id: string, amount: number): number {
+export function addMessage(id: string): number {
     return db
-        .prepare(
-            'UPDATE users SET points = points + $amount, lastPointsTimestamp = $now WHERE id = $id RETURNING points'
-        )
+        .prepare('UPDATE users SET messageCount = messageCount + 1 WHERE id = $id RETURNING messageCount')
         .pluck()
-        .get({
-            id,
-            amount,
-            now: +new Date(),
-        }) as number;
+        .get({ id }) as number;
 }
 
 export function updateName(id: string, name: string) {

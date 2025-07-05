@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { exit } from 'process';
 import log from '../log.js';
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 export const db = new Database('sqlite.db');
 db.pragma('journal_mode = WAL');
